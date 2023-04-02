@@ -60,7 +60,8 @@
 				"sap.m": {},
 				"sap.ui.core": {},
 				"sap.ushell": {},
-				"sap.fe.templates": {}
+				"sap.fe.templates": {},
+				"sap.f": {}
 			}
 		},
 		"contentDensities": {
@@ -93,22 +94,37 @@
 			"css": []
 		},
 		"routing": {
-			"config": {},
+			"config": {
+				"flexibleColumnLayout": {
+					"defaultTwoColumnLayoutType": "TwoColumnsMidExpanded",
+					"defaultThreeColumnLayoutType": "ThreeColumnsMidExpanded"
+				},
+				"routerClass": "sap.f.routing.Router"
+			},
 			"routes": [
 				{
 					"pattern": ":?query:",
 					"name": "ProductsList",
-					"target": "ProductsList"
+					"target": [
+						"ProductsList"
+					]
 				},
 				{
 					"pattern": "Products({key}):?query:",
 					"name": "ProductsObjectPage",
-					"target": "ProductsObjectPage"
+					"target": [
+						"ProductsList",
+						"ProductsObjectPage"
+					]
 				},
 				{
 					"pattern": "Products({key})/_Reviews({key2}):?query:",
 					"name": "ReviewsObjectPage",
-					"target": "ReviewsObjectPage"
+					"target": [
+						"ProductsList",
+						"ProductsObjectPage",
+						"ReviewsObjectPage"
+					]
 				}
 			],
 			"targets": {
@@ -128,7 +144,9 @@
 								}
 							}
 						}
-					}
+					},
+					"controlAggregation": "beginColumnPages",
+					"contextPattern": ""
 				},
 				"ProductsObjectPage": {
 					"type": "Component",
@@ -146,7 +164,9 @@
 								}
 							}
 						}
-					}
+					},
+					"controlAggregation": "midColumnPages",
+					"contextPattern": "/Products({key})"
 				},
 				"ReviewsObjectPage": {
 					"type": "Component",
@@ -157,9 +177,22 @@
 							"editableHeaderContent": false,
 							"entitySet": "Reviews"
 						}
-					}
+					},
+					"controlAggregation": "endColumnPages",
+					"contextPattern": "/Products({key})/_Reviews({key2})"
 				}
 			}
+		},
+		"extends": {
+			"extensions": {
+				"sap.ui.controllerExtensions": {}
+			}
+		},
+		"rootView": {
+			"viewName": "sap.fe.templates.RootContainer.view.Fcl",
+			"type": "XML",
+			"async": true,
+			"id": "appRootView"
 		}
 	},
 	"sap.fiori": {
