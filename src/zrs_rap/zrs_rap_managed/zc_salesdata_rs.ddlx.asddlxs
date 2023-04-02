@@ -1,0 +1,55 @@
+@Metadata.layer: #CORE
+
+@UI: {
+    headerInfo: {
+        typeName: 'Sales Order',
+        typeNamePlural: 'Sales Orders'
+    },
+    presentationVariant: [{
+        sortOrder: [{
+            by: 'DeliveryMonth_ID',
+            direction: #ASC
+        }],
+        groupBy: ['DeliveryMonth_ID'],
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }]
+// Only works for FEV2
+//    ,chart: [{
+//        title: 'Revenue History',
+//        chartType: #COLUMN,
+//        dimensions: ['DeliveryMonth_ID'],
+//        measures: ['Revenue']
+//    }]
+}
+annotate entity ZC_SalesData_RS with
+{
+  @UI.hidden: true
+  ID;
+
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @UI.textArrangement: #TEXT_ONLY
+  @EndUserText.label: 'Delivery Month'
+  DeliveryMonth_ID;
+
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @EndUserText.label: 'Revenue'
+  Revenue;
+
+  @UI.lineItem: [{ position: 30 }]
+  @EndUserText.label: 'Delivery Date'
+  DeliveryDate;
+
+  @UI.hidden: true
+  Currency_ID;
+
+  @UI.hidden: true
+  Product_ID;
+
+  @UI.hidden: true
+  MonthName;
+
+  @UI.hidden: true
+  MonthCode;
+}
