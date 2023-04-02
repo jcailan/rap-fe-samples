@@ -1,2 +1,1 @@
-# rep-fe-samples
-SAP Fiori Elements and RAP Model
+# SAP Fiori Elements and RAP Model

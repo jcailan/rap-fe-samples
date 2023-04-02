@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "2.5"
+metadata:
+  name: com.jcailan.rap.products
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          url: <your-abap-server-url>
+          scp: true
+        app:
+          name: ZRS_PRODUCTS
+          description: Display Products
+          package: ZUI5_APP
+          transport: H01K900026
