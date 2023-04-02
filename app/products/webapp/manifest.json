@@ -156,6 +156,7 @@
 						"settings": {
 							"editableHeaderContent": false,
 							"entitySet": "Products",
+							"variantManagement": "Page",
 							"navigation": {
 								"_Reviews": {
 									"detail": {

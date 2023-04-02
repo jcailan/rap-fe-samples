@@ -1,18 +1,77 @@
-<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
-    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
-        <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>
-    </edmx:Reference>
-    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
-        <edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI"/>
-    </edmx:Reference>
-    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Communication.xml">
-        <edmx:Include Namespace="com.sap.vocabularies.Communication.v1" Alias="Communication"/>
-    </edmx:Reference>
-    <edmx:Reference Uri="/sap/opu/odata4/sap/zui_products_rs_o4/srvd/sap/zsd_products_rs/0001/$metadata">
-        <edmx:Include Namespace="com.sap.gateway.srvd.zsd_products_rs.v0001" Alias="SAP__self"/>
-    </edmx:Reference>
-    <edmx:DataServices>
-        <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="local">
-        </Schema>
-    </edmx:DataServices>
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+	Version="4.0">
+	<edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Aggregation.V1.xml">
+		<edmx:Include Alias="Aggregation" Namespace="Org.OData.Aggregation.V1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Analytics.xml">
+		<edmx:Include Alias="Analytics" Namespace="com.sap.vocabularies.Analytics.v1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+		<edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+		<edmx:Include Namespace="com.sap.vocabularies.UI.v1"
+			Alias="UI"/>
+	</edmx:Reference>
+	<edmx:Reference Uri="/sap/opu/odata4/sap/zui_products_rs_o4/srvd/sap/zsd_products_rs/0001/$metadata">
+		<edmx:Include Namespace="com.sap.gateway.srvd.zsd_products_rs.v0001"
+			Alias="SAP__self"/>
+	</edmx:Reference>
+	<edmx:DataServices>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm"
+			Namespace="local">
+        <Annotations Target="SAP__self.SalesDataType">
+            <Annotation Term="UI.Chart">
+                <Record Type="UI.ChartDefinitionType">
+					<PropertyValue Property="ChartType" EnumMember="UI.ChartType/Column"/>
+					<PropertyValue Property="Title" String="Revenue History"/>
+					<PropertyValue Property="Dimensions">
+						<Collection>
+							<PropertyPath>DeliveryMonth_ID</PropertyPath>
+							<PropertyPath>Currency_ID</PropertyPath>
+						</Collection>
+					</PropertyValue>
+					<PropertyValue Property="DynamicMeasures">
+						<Collection>
+							<AnnotationPath>@Analytics.AggregatedProperty#TotalRevenue</AnnotationPath>
+						</Collection>
+					</PropertyValue>
+					<PropertyValue Property="MeasureAttributes">
+						<Collection>
+							<Record Type="UI.ChartMeasureAttributeType">
+								<PropertyValue Property="DynamicMeasure" AnnotationPath="@Analytics.AggregatedProperty#TotalRevenue"/>
+								<PropertyValue Property="Role" EnumMember="UI.ChartMeasureRoleType/Axis1"/>
+							</Record>
+						</Collection>
+					</PropertyValue>
+				</Record>
+            </Annotation>
+			<Annotation Term="Aggregation.ApplySupported" >
+				<Record Type="Aggregation.ApplySupportedType">
+					<PropertyValue Property="GroupableProperties">
+						<Collection>
+							<PropertyPath>DeliveryMonth_ID</PropertyPath>
+							<PropertyPath>Currency_ID</PropertyPath>
+						</Collection>
+					</PropertyValue>
+					<PropertyValue Property="AggregatableProperties">
+						<Collection>
+							<Record Type="Aggregation.AggregatablePropertyType">
+								<PropertyValue Property="Property" PropertyPath="Revenue"/>
+							</Record>
+						</Collection>
+					</PropertyValue>
+				</Record>
+			</Annotation>
+			<Annotation Term="Analytics.AggregatedProperty" Qualifier="TotalRevenue">
+				<Record Type="Analytics.AggregatedPropertyType">
+					<PropertyValue Property="Name" String="TotalRevenue"/>
+					<PropertyValue Property="AggregationMethod" String="sum"/>
+					<PropertyValue Property="AggregatableProperty" PropertyPath="Revenue"/>
+					<Annotation Term="Common.Label" String="Total Revenue"/>
+				</Record>
+			</Annotation>
+        </Annotations>
+		</Schema>
+	</edmx:DataServices>
 </edmx:Edmx>
