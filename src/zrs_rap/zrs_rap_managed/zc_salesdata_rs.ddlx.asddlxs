@@ -15,13 +15,6 @@
             type: #AS_LINEITEM
         }]
     }]
-// Only works for FEV2
-//    ,chart: [{
-//        title: 'Revenue History',
-//        chartType: #COLUMN,
-//        dimensions: ['DeliveryMonth_ID'],
-//        measures: ['Revenue']
-//    }]
 }
 annotate entity ZC_SalesData_RS with
 {
@@ -41,13 +34,13 @@ annotate entity ZC_SalesData_RS with
   @EndUserText.label: 'Delivery Date'
   DeliveryDate;
 
-  @UI.hidden: true
+  @EndUserText.label: 'Currency'
   Currency_ID;
 
   @UI.hidden: true
   Product_ID;
 
-  @UI.hidden: true
+  @EndUserText.label: 'Month Name'
   MonthName;
 
   @UI.hidden: true
