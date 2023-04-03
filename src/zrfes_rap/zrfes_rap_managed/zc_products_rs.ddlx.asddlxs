@@ -1,0 +1,183 @@
+@Metadata.layer: #CORE
+
+@UI: {
+    headerInfo: {
+        typeName: 'Product',
+        typeNamePlural: 'Products',
+        imageUrl: 'ImageUrl',
+        title: {
+            type: #STANDARD, value: 'Name'
+        },
+        description: {
+            value: 'Description'
+        }
+    },
+    presentationVariant: [{
+        sortOrder: [{
+            by: 'ModifiedAt',
+            direction: #DESC
+        }],
+        visualizations: [{
+            type: #AS_LINEITEM
+        }]
+    }]
+}
+@Search.searchable: true
+annotate entity ZC_Products_RS with
+{
+  @UI.facet: [{
+    type: #FIELDGROUP_REFERENCE,
+    purpose: #HEADER,
+    position: 10,
+    targetQualifier: 'BasicData',
+    label: 'Basic Data'
+  }, {
+    type: #DATAPOINT_REFERENCE,
+    purpose: #HEADER,
+    position: 20,
+    targetQualifier: 'Rating'
+  }, {
+    type: #DATAPOINT_REFERENCE,
+    purpose: #HEADER,
+    position: 30,
+    targetQualifier: 'Price'
+  }, {
+    type: #DATAPOINT_REFERENCE,
+    purpose: #HEADER,
+    position: 40,
+    targetQualifier: 'StockStatus'
+  }, {
+    type: #DATAPOINT_REFERENCE,
+    purpose: #HEADER,
+    position: 50,
+    targetQualifier: 'Availability'
+  }, {
+    type: #FIELDGROUP_REFERENCE,
+    position: 10,
+    targetQualifier: 'GeneralInformation',
+    label: 'General Information'
+  }, {
+    type: #LINEITEM_REFERENCE,
+    position: 20,
+    targetElement: '_Reviews',
+    label: 'Product Reviews'
+  }, {
+    type: #CHART_REFERENCE,
+    position: 30,
+    targetElement: '_SalesData',
+    label: 'Monthly Revenue'
+  }, {
+    type: #LINEITEM_REFERENCE,
+    position: 40,
+    targetElement: '_SalesData',
+    label: 'Sales Data'
+  }]
+
+  @UI.hidden: true
+  ID;
+
+  @Search.defaultSearchElement: true
+  @Search.fuzzinessThreshold: 0.90
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @EndUserText.label: 'Product'
+  Name;
+
+  @UI.lineItem: [{ position: 70 }]
+  @EndUserText.label: 'Description'
+  Description;
+
+  @UI.lineItem: [{ position: 10 }]
+  @EndUserText.label: 'Image'
+  ImageUrl;
+
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 20 }]
+  @EndUserText.label: 'Release Date'
+  ReleaseDate;
+
+  @EndUserText.label: 'Discontinued Date'
+  DiscontinuedDate;
+
+  @UI.lineItem: [{ position: 90 }]
+  @UI.dataPoint: { qualifier: 'Price', title: 'Price' }
+  @EndUserText.label: 'Price'
+  Price;
+
+  @UI.fieldGroup: [{ qualifier: 'GeneralInformation', position: 10 }]
+  @EndUserText.label: 'Height'
+  Height;
+
+  @UI.fieldGroup: [{ qualifier: 'GeneralInformation', position: 20 }]
+  @EndUserText.label: 'Width'
+  Width;
+
+  @UI.fieldGroup: [{ qualifier: 'GeneralInformation', position: 30 }]
+  @EndUserText.label: 'Depth'
+  Depth;
+
+  @UI.lineItem: [{ position: 80 }]
+  @UI.dataPoint: { qualifier: 'Availability', targetValue: 20, visualization: #PROGRESS, title: 'Availability', description: 'Stock Availability Indicator', criticality: 'StockStatus_ID' }
+  @EndUserText.label: 'Quantity'
+  Quantity;
+
+  @Consumption.valueHelpDefinition: [{ entity : {name: 'ZI_UnitOfMeasures_RS', element: 'ID'  } }]
+  @EndUserText.label: 'Quantity Unit'
+  UnitOfMeasure_ID;
+
+  @UI.selectionField: [ { position: 20 } ]
+  @Consumption.valueHelpDefinition: [{ entity : {name: 'ZI_Currencies_RS', element: 'ID'  } }]
+  @EndUserText.label: 'Currency'
+  Currency_ID;
+
+  @UI.lineItem: [{ position: 30 }]
+  @UI.selectionField: [ { position: 10 } ]
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 10 }]
+  @UI.textArrangement: #TEXT_ONLY
+  @Consumption.valueHelpDefinition: [{ entity : {name: 'ZI_Categories_RS', element: 'ID'  } }]
+  @EndUserText.label: 'Category'
+  Category_ID;
+
+  @UI.lineItem: [{ position: 40, type: #AS_CONTACT, value: '_Supplier', label: 'Supplier' }]
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 30, type: #AS_CONTACT, value: '_Supplier', label: 'Supplier' }]
+  @UI.textArrangement: #TEXT_ONLY
+  @Consumption.valueHelpDefinition: [{ entity : {name: 'ZI_Suppliers_RS', element: 'ID'  } }]
+  @EndUserText.label: 'Supplier'
+  Supplier_ID;
+
+  @EndUserText.label: 'Dimension Unit'
+  DimensionUnit_ID;
+
+  @UI.lineItem: [{ position: 50, type: #AS_DATAPOINT, cssDefault: { width: '12em' } }]
+  @UI.dataPoint: { qualifier: 'Rating', targetValue: 5, visualization: #RATING, title: 'Rating' }
+  @EndUserText.label: 'Rating'
+  Rating;
+
+  @UI.lineItem: [{ position: 60, criticality: 'StockStatus_ID' }]
+  @UI.selectionField: [ { position: 30 } ]
+  @UI.dataPoint: { qualifier: 'StockStatus', title: 'Stock Status', criticality: 'StockStatus_ID' }
+  @UI.textArrangement: #TEXT_ONLY
+  @Consumption.valueHelpDefinition: [{ entity : {name: 'ZI_StockStatuses_RS', element: 'ID' } }]
+  @EndUserText.label: 'Stock Status'
+  StockStatus_ID;
+
+  @UI.hidden: true
+  CreatedBy;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  ModifiedBy;
+
+  @UI.hidden: true
+  ModifiedAt;
+
+  @UI.hidden: true
+  CategoryName;
+
+  @UI.hidden: true
+  SupplierName;
+
+  @UI.hidden: true
+  StatusName;
+
+}
