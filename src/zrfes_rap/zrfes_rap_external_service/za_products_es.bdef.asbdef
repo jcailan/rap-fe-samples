@@ -1,0 +1,8 @@
+ implementation abstract;
+ define behavior for ZA_PRODUCTS_ES
+ etag master ETAG__ETAG
+ {
+   create;
+   update;
+   delete;
+ }

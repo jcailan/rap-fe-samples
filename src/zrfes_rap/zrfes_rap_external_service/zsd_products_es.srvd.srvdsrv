@@ -1,0 +1,4 @@
+@EndUserText.label: 'Products Service'
+define service ZSD_PRODUCTS_ES {
+  expose ZZ_Products_ES as Products;
+}

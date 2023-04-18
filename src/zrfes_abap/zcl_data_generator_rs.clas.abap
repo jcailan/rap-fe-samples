@@ -24,13 +24,14 @@ CLASS zcl_data_generator_rs DEFINITION
     TYPES tt_reviews_temp TYPE TABLE OF zsprodreviews_rs.
     TYPES tt_sales_data_temp TYPE TABLE OF zssalesdata_rs.
 
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-
     METHODS convert_to_abap_uuid
       IMPORTING
-                iv_uuid        TYPE ts_products_temp-id
-      RETURNING VALUE(rv_uuid) TYPE ts_products_temp-id.
+        iv_uuid        TYPE ts_products_temp-id
+      RETURNING
+        VALUE(rv_uuid) TYPE ts_products_temp-id.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 
     METHODS convert_to_abap_timestamp
       IMPORTING

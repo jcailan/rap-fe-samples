@@ -1,0 +1,37 @@
+unmanaged implementation in class zbp_products_es unique;
+strict ( 1 ); //Uncomment this line in order to enable strict mode 2. The strict mode has two variants (strict(1), strict(2)) and is prerequisite to be future proof regarding syntax and to be able to release your BO.
+//with draft;
+
+define behavior for ZZ_Products_ES alias Products
+//late numbering
+//draft table zdproducts_es
+authorization master ( instance )
+etag master modifiedAt
+lock master
+//total etag modifiedAt
+{
+  field ( readonly )
+  ID,
+  createdAt,
+  createdBy,
+  modifiedAt,
+  modifiedBy;
+
+  field ( mandatory )
+  name,
+  description,
+  category_id,
+  unitofmeasure_id,
+  currency_id;
+
+  //  Draft is not supported!
+  //  draft action Edit;
+  //  draft action Activate;
+  //  draft action Discard;
+  //  draft action Resume;
+  //  draft determine action Prepare;
+
+  create;
+  update;
+  delete;
+}

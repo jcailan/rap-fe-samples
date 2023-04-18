@@ -1,0 +1,5 @@
+@EndUserText.label: 'ZSC_PRODUCT_API_ES'
+@OData.schema.name: 'ProductAPI'
+define service ZSC_PRODUCT_API_ES {
+ expose ZA_PRODUCTS_ES; 
+ } 
