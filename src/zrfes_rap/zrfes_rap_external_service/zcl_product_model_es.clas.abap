@@ -25,6 +25,7 @@ CLASS zcl_product_model_es DEFINITION
 
     METHODS get_products
       IMPORTING
+        iv_search          TYPE string OPTIONAL
         it_filters         TYPE if_rap_query_filter=>tt_name_range_pairs   OPTIONAL
         it_sort_order      TYPE if_rap_query_request=>tt_sort_elements OPTIONAL
         iv_top             TYPE i OPTIONAL
@@ -167,12 +168,14 @@ CLASS zcl_product_model_es IMPLEMENTATION.
     DATA(skip) = io_request->get_paging( )->get_offset( ).
     DATA(requested_fields) = io_request->get_requested_elements( ).
     DATA(sort_order) = io_request->get_sort_elements( ).
+    DATA(search_expression) = io_request->get_search_expression( ).
 
     TRY.
         DATA(filters) = io_request->get_filter( )->get_as_ranges( ).
 
         get_products(
           EXPORTING
+            iv_search          = search_expression
             it_filters         = filters
             it_sort_order      = io_request->get_sort_elements( )
             iv_top             = CONV i( top )
@@ -257,6 +260,10 @@ CLASS zcl_product_model_es IMPLEMENTATION.
       request->set_filter( root_filter_node ).
     ENDIF.
 
+    IF iv_search IS NOT INITIAL.
+      request->set_search( iv_search ).
+    ENDIF.
+
     IF iv_top > 0 .
       request->set_top( iv_top ).
     ENDIF.
@@ -273,6 +280,10 @@ CLASS zcl_product_model_es IMPLEMENTATION.
     IF is_count_requested = abap_true.
       ev_count = response->get_count(  ).
     ENDIF.
+
+    LOOP AT et_products ASSIGNING FIELD-SYMBOL(<product>).
+      <product>-imageurl = |https://raw.githubusercontent.com/jcailan/cap-fe-samples/master{ <product>-imageurl }|.
+    ENDLOOP.
   ENDMETHOD.
 
   METHOD create_product.

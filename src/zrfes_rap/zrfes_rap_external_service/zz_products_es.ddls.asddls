@@ -4,6 +4,7 @@
     headerInfo: {
         typeName: 'Product',
         typeNamePlural: 'Products',
+        imageUrl: 'imageUrl',
         title: {
             type: #STANDARD, value: 'name'
         },
@@ -21,6 +22,7 @@
         }]
     }]
 }
+@Search.searchable: true
 define root custom entity ZZ_Products_ES
 {
       @UI.facet        : [{
@@ -53,12 +55,14 @@ define root custom entity ZZ_Products_ES
       name             : abap.string( 0 );
 
 
-      @UI.lineItem     : [{ position: 70 }]
+      @UI.lineItem     : [{ position: 30 }]
       @UI.fieldGroup   : [{ qualifier: 'GeneralInformation', position: 20 }]
       @EndUserText.label: 'Description'
       description      : abap.string( 0 );
 
-      @UI.hidden       : true
+      @Semantics.imageUrl: true
+      @UI.lineItem     : [{ position: 10 }]
+      @EndUserText.label: 'Image'
       imageUrl         : abap.string( 0 );
 
       @UI.fieldGroup   : [{ qualifier: 'BasicData', position: 20 }]
@@ -68,39 +72,46 @@ define root custom entity ZZ_Products_ES
       @EndUserText.label: 'Discontinued Date'
       discontinuedDate : tzntstmpl;
 
-      @UI.lineItem     : [{ position: 90 }]
+      @Semantics.amount.currencyCode: 'Currency_ID'
+      @UI.lineItem     : [{ position: 50 }]
+      @UI.fieldGroup   : [{ qualifier: 'GeneralInformation', position: 60 }]
       @UI.dataPoint    : { qualifier: 'Price', title: 'Price' }
       @EndUserText.label: 'Price'
-      price            : abap.dec( 16, 2 );
+      price            : abap.curr( 16, 2 );
 
+      @Semantics.quantity.unitOfMeasure: 'DimensionUnit_ID'
       @UI.fieldGroup   : [{ qualifier: 'GeneralInformation', position: 30 }]
       @EndUserText.label: 'Height'
       height           : abap.dec( 16, 2 );
 
+      @Semantics.quantity.unitOfMeasure: 'DimensionUnit_ID'
       @UI.fieldGroup   : [{ qualifier: 'GeneralInformation', position: 40 }]
       @EndUserText.label: 'Width'
       width            : abap.dec( 16, 2 );
 
+      @Semantics.quantity.unitOfMeasure: 'DimensionUnit_ID'
       @UI.fieldGroup   : [{ qualifier: 'GeneralInformation', position: 50 }]
       @EndUserText.label: 'Depth'
       depth            : abap.dec( 16, 2 );
 
-      @UI.lineItem     : [{ position: 80 }]
-      @EndUserText.label: 'Quantity'
-      quantity         : abap.dec( 16, 2 );
-
-      @EndUserText.label: 'Quantity Unit'
+      @Semantics.quantity.unitOfMeasure: 'UnitOfMeasure_ID'
+      @UI.lineItem     : [{ position: 60 }]
       @UI.fieldGroup   : [{ qualifier: 'GeneralInformation', position: 70 }]
-      UnitOfMeasure_ID : abap.char( 3 );
+      @EndUserText.label: 'Quantity'
+      quantity         : abap.quan( 16, 2 );
+
+      @EndUserText.label: 'Unit of Measure'
+      @UI.fieldGroup   : [{ qualifier: 'GeneralInformation', position: 90 }]
+      UnitOfMeasure_ID : abap.unit( 3 );
 
       @UI.selectionField: [ { position: 20 } ]
-      @UI.fieldGroup   : [{ qualifier: 'GeneralInformation', position: 80 }]
+      @UI.fieldGroup   : [{ qualifier: 'GeneralInformation', position: 100 }]
       @EndUserText.label: 'Currency'
-      Currency_ID      : abap.char( 3 );
+      Currency_ID      : abap.cuky;
 
-      @UI.lineItem     : [{ position: 30 }]
+      @UI.lineItem     : [{ position: 40 }]
       @UI.selectionField: [ { position: 10 } ]
-      @UI.fieldGroup   : [{ qualifier: 'BasicData', position: 10 }, { qualifier: 'GeneralInformation', position: 60 }]
+      @UI.fieldGroup   : [{ qualifier: 'BasicData', position: 10 }, { qualifier: 'GeneralInformation', position: 80 }]
       @EndUserText.label: 'Category'
       Category_ID      : abap.char( 1 );
 
@@ -108,7 +119,7 @@ define root custom entity ZZ_Products_ES
       Supplier_ID      : sysuuid_x16;
 
       @EndUserText.label: 'Dimension Unit'
-      DimensionUnit_ID : abap.char( 2 );
+      DimensionUnit_ID : abap.unit( 2 );
 
       @EndUserText.label: 'Created At'
       createdAt        : tzntstmpl;

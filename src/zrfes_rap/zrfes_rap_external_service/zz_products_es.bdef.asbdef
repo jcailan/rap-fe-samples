@@ -20,6 +20,8 @@ lock master
   field ( mandatory )
   name,
   description,
+  price,
+  quantity,
   category_id,
   unitofmeasure_id,
   currency_id;
