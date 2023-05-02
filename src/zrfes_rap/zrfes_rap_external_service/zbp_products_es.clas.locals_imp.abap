@@ -1,9 +1,20 @@
 CLASS lhc_zz_products_es DEFINITION INHERITING FROM cl_abap_behavior_handler.
+  PUBLIC SECTION.
+    METHODS set_model
+      IMPORTING
+        io_model TYPE REF TO zcl_product_model_es.
+
+    METHODS get_model
+      RETURNING
+        VALUE(ro_model) TYPE REF TO zcl_product_model_es.
+
   PRIVATE SECTION.
 
     TYPES ts_product TYPE zz_products_es.
     TYPES tt_product_failed TYPE TABLE FOR FAILED zz_products_es.
     TYPES tt_product_reported TYPE TABLE FOR REPORTED zz_products_es.
+
+    DATA mo_model TYPE REF TO zcl_product_model_es.
 
     METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
       IMPORTING keys REQUEST requested_authorizations FOR products RESULT result.
@@ -41,11 +52,11 @@ CLASS lhc_zz_products_es IMPLEMENTATION.
 
   METHOD create.
     DATA product TYPE zcl_product_model_es=>ts_product.
-    DATA(entity) = NEW zcl_product_model_es(  ).
+    DATA(model) = get_model( ).
 
     LOOP AT entities ASSIGNING FIELD-SYMBOL(<entity>).
       TRY.
-          entity->create_product(
+          model->create_product(
             EXPORTING
               is_product = CORRESPONDING #( <entity> )
             IMPORTING
@@ -67,11 +78,11 @@ CLASS lhc_zz_products_es IMPLEMENTATION.
 
   METHOD update.
     DATA notification TYPE zcl_product_model_es=>ts_product.
-    DATA(entity) = NEW zcl_product_model_es(  ).
+    DATA(model) = get_model( ).
 
     LOOP AT entities ASSIGNING FIELD-SYMBOL(<entity>).
       TRY.
-          entity->update_product( CORRESPONDING #( <entity> ) ).
+          model->update_product( CORRESPONDING #( <entity> ) ).
         CATCH cx_root INTO DATA(exception).
           map_messages(
             EXPORTING
@@ -88,11 +99,11 @@ CLASS lhc_zz_products_es IMPLEMENTATION.
 
   METHOD delete.
     DATA product TYPE zcl_product_model_es=>ts_product.
-    DATA(entity) = NEW zcl_product_model_es(  ).
+    DATA(model) = get_model( ).
 
     LOOP AT keys ASSIGNING FIELD-SYMBOL(<key>) GROUP BY <key>-%tky.
       TRY.
-          entity->delete_product( <key>-id ).
+          model->delete_product( <key>-id ).
         CATCH cx_root INTO DATA(exception).
           map_messages(
             EXPORTING
@@ -108,11 +119,11 @@ CLASS lhc_zz_products_es IMPLEMENTATION.
 
   METHOD read.
     DATA product TYPE zcl_product_model_es=>ts_product.
-    DATA(entity) = NEW zcl_product_model_es(  ).
+    DATA(model) = get_model( ).
 
     LOOP AT keys ASSIGNING FIELD-SYMBOL(<key>) GROUP BY <key>-%tky.
       TRY.
-          entity->get_product(
+          model->get_product(
             EXPORTING
               iv_key     = <key>-id
             IMPORTING
@@ -150,6 +161,18 @@ CLASS lhc_zz_products_es IMPLEMENTATION.
         text     = message
       )
     ) TO reported.
+  ENDMETHOD.
+
+  METHOD set_model.
+    mo_model = io_model.
+  ENDMETHOD.
+
+  METHOD get_model.
+    IF mo_model IS NOT BOUND.
+      mo_model = NEW zcl_product_model_es( ).
+    ENDIF.
+
+    RETURN mo_model.
   ENDMETHOD.
 
 ENDCLASS.

@@ -12,6 +12,10 @@ CLASS zcl_product_model_es DEFINITION
     TYPES tt_products TYPE TABLE OF ts_product.
     TYPES tr_product_id TYPE RANGE OF ts_product-id.
 
+    METHODS constructor
+      IMPORTING
+        io_proxy_client TYPE REF TO /iwbep/if_cp_client_proxy OPTIONAL.
+
     METHODS get_product
       IMPORTING
         iv_key     TYPE ts_product-id
@@ -26,7 +30,7 @@ CLASS zcl_product_model_es DEFINITION
     METHODS get_products
       IMPORTING
         iv_search          TYPE string OPTIONAL
-        it_filters         TYPE if_rap_query_filter=>tt_name_range_pairs   OPTIONAL
+        it_filters         TYPE if_rap_query_filter=>tt_name_range_pairs OPTIONAL
         it_sort_order      TYPE if_rap_query_request=>tt_sort_elements OPTIONAL
         iv_top             TYPE i OPTIONAL
         iv_skip            TYPE i OPTIONAL
@@ -73,6 +77,8 @@ CLASS zcl_product_model_es DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
 
+    DATA mo_proxy_client TYPE REF TO /iwbep/if_cp_client_proxy.
+
     METHODS get_proxy_client
       RETURNING
         VALUE(ro_proxy_client) TYPE REF TO /iwbep/if_cp_client_proxy
@@ -86,6 +92,10 @@ ENDCLASS.
 
 
 CLASS zcl_product_model_es IMPLEMENTATION.
+
+  METHOD constructor.
+    me->mo_proxy_client = io_proxy_client.
+  ENDMETHOD.
 
   METHOD if_oo_adt_classrun~main.
     DATA product TYPE ts_product.
@@ -202,17 +212,19 @@ CLASS zcl_product_model_es IMPLEMENTATION.
     DATA http_client  TYPE REF TO if_web_http_client.
     DATA proxy_client TYPE REF TO /iwbep/if_cp_client_proxy.
 
-    DATA(base_url) = CONV string( 'https://capfes-srv-sbx.cfapps.us10.hana.ondemand.com/' ).
-    DATA(destination) = cl_http_destination_provider=>create_by_url( i_url = base_url ).
-    http_client = cl_web_http_client_manager=>create_by_http_destination( i_destination = destination ).
+    IF mo_proxy_client IS NOT BOUND.
+      DATA(base_url) = CONV string( 'https://capfes-srv-sbx.cfapps.us10.hana.ondemand.com/' ).
+      DATA(destination) = cl_http_destination_provider=>create_by_url( i_url = base_url ).
+      http_client = cl_web_http_client_manager=>create_by_http_destination( i_destination = destination ).
 
-    proxy_client = cl_web_odata_client_factory=>create_v2_remote_proxy(
-      EXPORTING
-        iv_service_definition_name = 'ZSC_PRODUCT_API_ES'
-        io_http_client             = http_client
-        iv_relative_service_root   = '/v2/product-api/' ).
+      mo_proxy_client = cl_web_odata_client_factory=>create_v2_remote_proxy(
+        EXPORTING
+          iv_service_definition_name = 'ZSC_PRODUCT_API_ES'
+          io_http_client             = http_client
+          iv_relative_service_root   = '/v2/product-api/' ).
+    ENDIF.
 
-    RETURN proxy_client.
+    RETURN mo_proxy_client.
   ENDMETHOD.
 
   METHOD get_product.
