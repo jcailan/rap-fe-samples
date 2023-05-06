@@ -23,33 +23,21 @@ CLASS zcl_data_generator_rs DEFINITION
     TYPES tt_suppliers_temp TYPE TABLE OF zssuppliers_rs.
     TYPES tt_reviews_temp TYPE TABLE OF zsprodreviews_rs.
     TYPES tt_sales_data_temp TYPE TABLE OF zssalesdata_rs.
-
-    METHODS convert_to_abap_uuid
-      IMPORTING
-        iv_uuid        TYPE ts_products_temp-id
-      RETURNING
-        VALUE(rv_uuid) TYPE ts_products_temp-id.
+    METHODS constructor.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
-
-    METHODS convert_to_abap_timestamp
-      IMPORTING
-        iv_timestamp        TYPE ts_products_temp-release_date
-      RETURNING
-        VALUE(rv_timestamp) TYPE ts_products_temp-release_date.
-
-    METHODS condense_string
-      IMPORTING
-        iv_string        TYPE ts_products_temp-description
-      RETURNING
-        VALUE(rv_string) TYPE ts_products_temp-description.
+    DATA mo_util TYPE REF TO zcl_rfes_util.
 
 ENDCLASS.
 
 
 
 CLASS zcl_data_generator_rs IMPLEMENTATION.
+
+  METHOD constructor.
+    mo_util = NEW zcl_rfes_util(  ).
+  ENDMETHOD.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -151,11 +139,11 @@ CLASS zcl_data_generator_rs IMPLEMENTATION.
     ).
 
     LOOP AT products_temp ASSIGNING FIELD-SYMBOL(<product>).
-      <product>-id = convert_to_abap_uuid( <product>-id ).
-      <product>-supplier_id = convert_to_abap_uuid( <product>-supplier_id ).
-      <product>-description = condense_string( <product>-description ).
-      <product>-release_date = convert_to_abap_timestamp( <product>-release_date ).
-      <product>-discontinued_date = convert_to_abap_timestamp( <product>-discontinued_date ).
+      <product>-id = mo_util->convert_to_abap_uuid( CONV #( <product>-id ) ).
+      <product>-supplier_id = mo_util->convert_to_abap_uuid( CONV #( <product>-supplier_id ) ).
+      <product>-description = mo_util->condense_string( CONV #( <product>-description ) ).
+      <product>-release_date = mo_util->convert_to_abap_timestamp( CONV #( <product>-release_date ) ).
+      <product>-discontinued_date = mo_util->convert_to_abap_timestamp( CONV #( <product>-discontinued_date ) ).
       <product>-created_by = <product>-modified_by = cl_abap_context_info=>get_user_technical_name(  ).
       <product>-created_at = <product>-modified_at = |{ cl_abap_context_info=>get_system_date(  ) }{ cl_abap_context_info=>get_system_time(  ) }|.
     ENDLOOP.
@@ -187,7 +175,7 @@ CLASS zcl_data_generator_rs IMPLEMENTATION.
     ).
 
     LOOP AT suppliers_temp ASSIGNING FIELD-SYMBOL(<suppliers>).
-      <suppliers>-id = convert_to_abap_uuid( <suppliers>-id ).
+      <suppliers>-id = mo_util->convert_to_abap_uuid( CONV #( <suppliers>-id ) ).
     ENDLOOP.
 
     suppliers = CORRESPONDING #( suppliers_temp ).
@@ -242,9 +230,9 @@ CLASS zcl_data_generator_rs IMPLEMENTATION.
     ).
 
     LOOP AT reviews_temp ASSIGNING FIELD-SYMBOL(<reviews>).
-      <reviews>-id = convert_to_abap_uuid( <reviews>-id ).
-      <reviews>-product_id = convert_to_abap_uuid( <reviews>-product_id ).
-      <reviews>-comments = condense_string( <reviews>-comments ).
+      <reviews>-id = mo_util->convert_to_abap_uuid( CONV #( <reviews>-id ) ).
+      <reviews>-product_id = mo_util->convert_to_abap_uuid( CONV #( <reviews>-product_id ) ).
+      <reviews>-comments = mo_util->condense_string( CONV #( <reviews>-comments ) ).
       <reviews>-created_by = <reviews>-modified_by = cl_abap_context_info=>get_user_technical_name(  ).
       <reviews>-created_at = <reviews>-modified_at = |{ cl_abap_context_info=>get_system_date(  ) }{ cl_abap_context_info=>get_system_time(  ) }|.
     ENDLOOP.
@@ -274,9 +262,9 @@ CLASS zcl_data_generator_rs IMPLEMENTATION.
     ).
 
     LOOP AT sales_data_temp ASSIGNING FIELD-SYMBOL(<data>).
-      <data>-id = convert_to_abap_uuid( <data>-id ).
-      <data>-product_id = convert_to_abap_uuid( <data>-product_id ).
-      <data>-delivery_date = convert_to_abap_timestamp( <data>-delivery_date ).
+      <data>-id = mo_util->convert_to_abap_uuid( CONV #( <data>-id ) ).
+      <data>-product_id = mo_util->convert_to_abap_uuid( CONV #( <data>-product_id ) ).
+      <data>-delivery_date = mo_util->convert_to_abap_timestamp( CONV #( <data>-delivery_date ) ).
     ENDLOOP.
 
     sales_data = CORRESPONDING #( sales_data_temp ).
@@ -284,26 +272,6 @@ CLASS zcl_data_generator_rs IMPLEMENTATION.
     INSERT zasalesdata_rs FROM TABLE @sales_data.
     out->write( |Sales Data: { sy-dbcnt } data inserted successfully!| ).
 
-  ENDMETHOD.
-
-
-  METHOD convert_to_abap_uuid.
-    rv_uuid = to_upper( iv_uuid ).
-    rv_uuid = replace( val = rv_uuid sub = '-' occ = 0 with = '' ).
-    RETURN rv_uuid.
-  ENDMETHOD.
-
-  METHOD convert_to_abap_timestamp.
-    rv_timestamp = replace( val = iv_timestamp sub = '-' occ = 0 with = '' ).
-    rv_timestamp = replace( val = rv_timestamp sub = ':' occ = 0 with = '' ).
-    rv_timestamp = replace( val = rv_timestamp sub = 'T' occ = 0 with = '' ).
-    rv_timestamp = replace( val = rv_timestamp sub = 'Z' occ = 0 with = '' ).
-    RETURN rv_timestamp.
-  ENDMETHOD.
-
-  METHOD condense_string.
-    rv_string = replace( val = iv_string sub = '"' occ = 0 with = '' ).
-    RETURN rv_string.
   ENDMETHOD.
 
 ENDCLASS.

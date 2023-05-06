@@ -1,7 +1,7 @@
 CLASS zcl_product_model_es DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
 
@@ -9,7 +9,7 @@ CLASS zcl_product_model_es DEFINITION
     INTERFACES if_rap_query_provider.
 
     TYPES ts_product TYPE za_products_es.
-    TYPES tt_products TYPE TABLE OF ts_product.
+    TYPES tt_products TYPE TABLE OF ts_product WITH NON-UNIQUE KEY id.
     TYPES tr_product_id TYPE RANGE OF ts_product-id.
 
     METHODS constructor
@@ -78,6 +78,7 @@ CLASS zcl_product_model_es DEFINITION
   PRIVATE SECTION.
 
     DATA mo_proxy_client TYPE REF TO /iwbep/if_cp_client_proxy.
+    DATA mv_operation TYPE string VALUE 'Q'.
 
     METHODS get_proxy_client
       RETURNING
@@ -102,12 +103,11 @@ CLASS zcl_product_model_es IMPLEMENTATION.
     DATA products TYPE tt_products.
     DATA filters TYPE if_rap_query_filter=>tt_name_range_pairs.
     DATA etag TYPE string.
-    DATA operation TYPE string VALUE 'C'.
 
-    DATA(util) = NEW zcl_data_generator_rs( ).
+    DATA(util) = NEW zcl_rfes_util( ).
 
     TRY.
-        CASE operation.
+        CASE mv_operation.
           WHEN 'R'.
             get_product(
               EXPORTING
@@ -123,6 +123,7 @@ CLASS zcl_product_model_es IMPLEMENTATION.
             get_products(
               EXPORTING
                 it_filters  = filters
+                iv_search   = 'Lemon'
                 iv_top      = 5
                 iv_skip     = 0
               IMPORTING
@@ -173,26 +174,20 @@ CLASS zcl_product_model_es IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD if_rap_query_provider~select.
-    DATA products TYPE tt_products.
     DATA(top) = io_request->get_paging( )->get_page_size( ).
     DATA(skip) = io_request->get_paging( )->get_offset( ).
-    DATA(requested_fields) = io_request->get_requested_elements( ).
-    DATA(sort_order) = io_request->get_sort_elements( ).
-    DATA(search_expression) = io_request->get_search_expression( ).
 
     TRY.
-        DATA(filters) = io_request->get_filter( )->get_as_ranges( ).
-
         get_products(
           EXPORTING
-            iv_search          = search_expression
-            it_filters         = filters
+            iv_search          = io_request->get_search_expression( )
+            it_filters         = io_request->get_filter( )->get_as_ranges( )
             it_sort_order      = io_request->get_sort_elements( )
             iv_top             = CONV i( top )
             iv_skip            = CONV i( skip )
             is_count_requested = io_request->is_total_numb_of_rec_requested( )
           IMPORTING
-            et_products        = products
+            et_products        = DATA(products)
             ev_count           = DATA(count)
         ).
 
@@ -253,7 +248,7 @@ CLASS zcl_product_model_es IMPLEMENTATION.
     request = proxy_client->create_resource_for_entity_set( 'PRODUCTS' )->create_request_for_read( ).
     filter_factory = request->create_filter_factory( ).
 
-    LOOP AT  it_filters  INTO DATA(filter).
+    LOOP AT it_filters INTO DATA(filter).
       filter_node = filter_factory->create_by_range( iv_property_path = filter-name
                                                      it_range         = filter-range ).
       IF root_filter_node IS INITIAL.
