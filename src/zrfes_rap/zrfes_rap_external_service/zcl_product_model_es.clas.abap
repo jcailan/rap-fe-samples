@@ -5,7 +5,6 @@ CLASS zcl_product_model_es DEFINITION
 
   PUBLIC SECTION.
 
-    INTERFACES if_oo_adt_classrun.
     INTERFACES if_rap_query_provider.
 
     TYPES ts_product TYPE za_products_es.
@@ -78,7 +77,6 @@ CLASS zcl_product_model_es DEFINITION
   PRIVATE SECTION.
 
     DATA mo_proxy_client TYPE REF TO /iwbep/if_cp_client_proxy.
-    DATA mv_operation TYPE string VALUE 'Q'.
 
     METHODS get_proxy_client
       RETURNING
@@ -96,81 +94,6 @@ CLASS zcl_product_model_es IMPLEMENTATION.
 
   METHOD constructor.
     me->mo_proxy_client = io_proxy_client.
-  ENDMETHOD.
-
-  METHOD if_oo_adt_classrun~main.
-    DATA product TYPE ts_product.
-    DATA products TYPE tt_products.
-    DATA filters TYPE if_rap_query_filter=>tt_name_range_pairs.
-    DATA etag TYPE string.
-
-    DATA(util) = NEW zcl_rfes_util( ).
-
-    TRY.
-        CASE mv_operation.
-          WHEN 'R'.
-            get_product(
-              EXPORTING
-                iv_key     = CONV #( util->convert_to_abap_uuid( '06f86ef1-1525-4932-b1ce-d40661464c66' ) )
-              IMPORTING
-                es_product = product
-                ev_etag    = etag
-            ).
-            out->write( product ).
-            out->write( |ETAG: { etag }| ).
-
-          WHEN 'Q'.
-            get_products(
-              EXPORTING
-                it_filters  = filters
-                iv_search   = 'Lemon'
-                iv_top      = 5
-                iv_skip     = 0
-              IMPORTING
-                et_products = products
-            ).
-            out->write( products ).
-
-          WHEN 'C'.
-            create_product(
-              EXPORTING
-                is_product = VALUE #(
-                  name = 'Pearl Mik Tea'
-                  description = 'Milk tea with chewy pearls'
-                  category_id = 'B'
-                  unitofmeasure_id = 'EA'
-                  currency_id = 'USD'
-                )
-              IMPORTING
-                es_product = product
-            ).
-            out->write( product ).
-
-          WHEN 'U'.
-            update_product(
-              EXPORTING
-                is_product = VALUE #(
-                  id = CONV #( util->convert_to_abap_uuid( '06f86ef1-1525-4932-b1ce-d40661464c66' ) )
-                  name = 'Pink Lemonade (edited)'
-                )
-                iv_etag    = ''
-              IMPORTING
-                ev_etag    = etag
-            ).
-            out->write( |ETAG: { etag }| ).
-
-          WHEN 'D'.
-            delete_product(
-              EXPORTING
-                iv_key = CONV #( util->convert_to_abap_uuid( '00000000-0000-0000-0000-000000000000' ) )
-            ).
-            out->write( 'Entity was deleted' ).
-        ENDCASE.
-
-      CATCH cx_root INTO DATA(exception).
-        out->write( cl_message_helper=>get_latest_t100_exception( exception )->if_message~get_longtext( ) ).
-    ENDTRY.
-
   ENDMETHOD.
 
   METHOD if_rap_query_provider~select.
@@ -228,9 +151,9 @@ CLASS zcl_product_model_es IMPLEMENTATION.
 
     DATA(proxy_client) = get_proxy_client( ).
     DATA(key) = VALUE ts_product( id = iv_key ).
-    DATA(resource) = proxy_client->create_resource_for_entity_set( 'PRODUCTS' )->navigate_with_key( key ).
+    DATA(entity) = proxy_client->create_resource_for_entity_set( 'PRODUCTS' )->navigate_with_key( key ).
 
-    request = resource->create_request_for_read( ).
+    request = entity->create_request_for_read( ).
     response = request->execute( ).
     response->get_business_data( IMPORTING es_business_data = es_product ).
     ev_etag = response->get_etag( ).
@@ -289,7 +212,9 @@ CLASS zcl_product_model_es IMPLEMENTATION.
     ENDIF.
 
     LOOP AT et_products ASSIGNING FIELD-SYMBOL(<product>).
-      <product>-imageurl = |https://raw.githubusercontent.com/jcailan/cap-fe-samples/master{ <product>-imageurl }|.
+      IF <product>-imageurl IS NOT INITIAL.
+        <product>-imageurl = |https://raw.githubusercontent.com/jcailan/cap-fe-samples/master{ <product>-imageurl }|.
+      ENDIF.
     ENDLOOP.
   ENDMETHOD.
 
@@ -312,9 +237,9 @@ CLASS zcl_product_model_es IMPLEMENTATION.
 
     DATA(proxy_client) = get_proxy_client( ).
     DATA(key) = VALUE ts_product( id  = is_product-id ).
-    DATA(resource) = proxy_client->create_resource_for_entity_set( 'PRODUCTS' )->navigate_with_key( key ).
+    DATA(entity) = proxy_client->create_resource_for_entity_set( 'PRODUCTS' )->navigate_with_key( key ).
 
-    request = resource->create_request_for_update( /iwbep/if_cp_request_update=>gcs_update_semantic-patch ).
+    request = entity->create_request_for_update( /iwbep/if_cp_request_update=>gcs_update_semantic-patch ).
     request->set_if_match( iv_etag )->request_no_business_data( ).
 
     APPEND INITIAL LINE TO provided_properties ASSIGNING FIELD-SYMBOL(<property>).
