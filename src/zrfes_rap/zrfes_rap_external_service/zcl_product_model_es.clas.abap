@@ -13,7 +13,7 @@ CLASS zcl_product_model_es DEFINITION
 
     METHODS constructor
       IMPORTING
-        io_proxy_client TYPE REF TO /iwbep/if_cp_client_proxy OPTIONAL.
+        io_client_proxy TYPE REF TO /iwbep/if_cp_client_proxy OPTIONAL.
 
     METHODS get_product
       IMPORTING
@@ -93,7 +93,7 @@ ENDCLASS.
 CLASS zcl_product_model_es IMPLEMENTATION.
 
   METHOD constructor.
-    me->mo_client_proxy = io_proxy_client.
+    me->mo_client_proxy = io_client_proxy.
   ENDMETHOD.
 
   METHOD if_rap_query_provider~select.
