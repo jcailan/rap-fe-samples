@@ -1,0 +1,96 @@
+managed implementation in class zbp_i_products_rs unique;
+strict ( 2 );
+
+define behavior for ZI_Products_RS alias Products
+persistent table zaproducts_rs
+lock master
+authorization master ( instance )
+etag master ModifiedAt
+{
+  create;
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) ID;
+  field ( readonly ) ImageUrl, CreatedBy, CreatedAt, ModifiedBy, ModifiedAt, StockStatus_ID, Rating;
+  field ( mandatory ) Name, Price, Currency_ID, Category_ID;
+
+  association _Reviews { create; }
+  association _SalesData { create; }
+
+  mapping for zaproducts_rs
+    {
+      ID               = id;
+      Name             = name;
+      Description      = description;
+      ReleaseDate      = release_date;
+      DiscontinuedDate = discontinued_date;
+      Price            = price;
+      Height           = height;
+      Width            = width;
+      Depth            = depth;
+      Quantity         = quantity;
+      UnitOfMeasure_ID = unit_of_measure_id;
+      Currency_ID      = currency_id;
+      Category_ID      = category_id;
+      Supplier_ID      = supplier_id;
+      DimensionUnit_ID = dimension_unit_id;
+      CreatedBy        = created_by;
+      CreatedAt        = created_at;
+      ModifiedBy       = modified_by;
+      ModifiedAt       = modified_at;
+    }
+}
+
+define behavior for ZI_ProductReviews_RS alias Reviews
+persistent table zaprodreviews_rs
+lock dependent by _Products
+authorization dependent by _Products
+etag dependent by _Products
+{
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) ID;
+  field ( readonly ) Product_ID, CreatedBy, CreatedAt, ModifiedBy, ModifiedAt;
+
+  association _Products;
+
+  mapping for zaprodreviews_rs
+    {
+      ID         = id;
+      Name       = name;
+      Rating     = rating;
+      Comments   = comments;
+      Product_ID = product_id;
+      CreatedBy  = created_by;
+      CreatedAt  = created_at;
+      ModifiedBy = modified_by;
+      ModifiedAt = modified_at;
+    }
+}
+
+define behavior for ZI_SalesData_RS alias SalesData
+persistent table zasalesdata_rs
+lock dependent by _Products
+authorization dependent by _Products
+etag dependent by _Products
+{
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) ID;
+  field ( readonly ) Product_ID, MonthName, MonthCode;
+
+  association _Products;
+
+  mapping for zasalesdata_rs
+    {
+      ID               = id;
+      DeliveryDate     = delivery_date;
+      Revenue          = revenue;
+      Currency_ID      = currency_id;
+      Product_ID       = product_id;
+      DeliveryMonth_ID = delivery_month_id;
+    }
+}

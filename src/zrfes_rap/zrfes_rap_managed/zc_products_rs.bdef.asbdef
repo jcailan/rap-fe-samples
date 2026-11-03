@@ -1,0 +1,28 @@
+projection;
+strict ( 2 );
+
+define behavior for ZC_Products_RS alias Products
+{
+  use create;
+  use update;
+  use delete;
+
+  use association _Reviews { create; }
+  use association _SalesData { create; }
+}
+
+define behavior for ZC_ProductReviews_RS alias Reviews
+{
+  use update;
+  use delete;
+
+  use association _Products;
+}
+
+define behavior for ZC_SalesData_RS alias SalesData
+{
+  use update;
+  use delete;
+
+  use association _Products;
+}

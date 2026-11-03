@@ -2,6 +2,7 @@
 @EndUserText.label: 'Products Consumption View'
 @Metadata.allowExtensions: true
 define root view entity ZC_Products_RS
+  provider contract transactional_query
   as projection on ZI_Products_RS
 {
   key ID,
