@@ -1,7 +1,7 @@
 projection;
 strict ( 2 );
 
-define behavior for ZC_Products_RS alias Products
+define behavior for ZC_Products_RS alias Products use etag
 {
   use create;
   use update;
@@ -11,7 +11,7 @@ define behavior for ZC_Products_RS alias Products
   use association _SalesData { create; }
 }
 
-define behavior for ZC_ProductReviews_RS alias Reviews
+define behavior for ZC_ProductReviews_RS alias Reviews use etag
 {
   use update;
   use delete;
@@ -19,7 +19,7 @@ define behavior for ZC_ProductReviews_RS alias Reviews
   use association _Products;
 }
 
-define behavior for ZC_SalesData_RS alias SalesData
+define behavior for ZC_SalesData_RS alias SalesData use etag
 {
   use update;
   use delete;
