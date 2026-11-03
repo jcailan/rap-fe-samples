@@ -14,6 +14,8 @@
     <item>/.gitlab-ci.yml</item>
     <item>/abaplint.json</item>
     <item>/azure-pipelines.yml</item>
+    <item>/src/*.sco2.xml</item>
+    <item>/src/*.sia6.xml</item>
    </IGNORE>
   </DATA>
  </asx:values>

@@ -1,4 +1,4 @@
-managed implementation in class zbp_i_products_rs unique;
+managed;
 strict ( 2 );
 
 define behavior for ZI_Products_RS alias Products
