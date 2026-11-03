@@ -66,8 +66,8 @@ annotate entity ZC_ProductReviews_RS with
   @UI.hidden: true
   CreatedBy;
 
-  @UI.hidden: true
-  ModifiedAt;
+  //@UI.hidden: true // clashes with 'etag master ModifiedAt' of ZI_Products_RS
+  //ModifiedAt; // clashes with 'etag master ModifiedAt' of ZI_Products_RS
 
   @UI.hidden: true
   ModifiedBy;

@@ -12,7 +12,7 @@ define view entity ZC_ProductReviews_RS
       CreatedBy,
       CreatedAt,
       ModifiedBy,
-      ModifiedAt,
+      //ModifiedAt, // clashes with 'etag master ModifiedAt' of ZI_Products_RS
 
       _Products : redirected to parent ZC_Products_RS
 }

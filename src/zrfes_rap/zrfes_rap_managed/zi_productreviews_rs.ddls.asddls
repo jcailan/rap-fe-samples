@@ -19,7 +19,7 @@ define view entity ZI_ProductReviews_RS
       CreatedBy,
       CreatedAt,
       ModifiedBy,
-      ModifiedAt,
+      //ModifiedAt, // clashes with 'etag master ModifiedAt' of ZI_Products_RS
 
       _Products
 }

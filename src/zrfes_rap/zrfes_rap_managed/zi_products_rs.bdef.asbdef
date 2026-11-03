@@ -52,7 +52,7 @@ etag dependent by _Products
   delete;
 
   field ( numbering : managed, readonly ) ID;
-  field ( readonly ) Product_ID, CreatedBy, CreatedAt, ModifiedBy, ModifiedAt;
+  field ( readonly ) Product_ID, CreatedBy, CreatedAt, ModifiedBy;
 
   association _Products;
 
@@ -66,7 +66,7 @@ etag dependent by _Products
       CreatedBy  = created_by;
       CreatedAt  = created_at;
       ModifiedBy = modified_by;
-      ModifiedAt = modified_at;
+      //ModifiedAt = modified_at; // clashes with 'etag master ModifiedAt' of ZI_Products_RS
     }
 }
 
