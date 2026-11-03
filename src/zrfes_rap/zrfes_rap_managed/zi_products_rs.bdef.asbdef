@@ -1,10 +1,10 @@
-managed;
+managed implementation in class zbp_i_products_rs unique;
 strict ( 2 );
 
 define behavior for ZI_Products_RS alias Products
 persistent table zaproducts_rs
 lock master
-authorization master ( instance )
+authorization master ( global )
 etag master ModifiedAt
 {
   create;
